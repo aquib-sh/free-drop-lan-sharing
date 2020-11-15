@@ -9,28 +9,28 @@ class DBHelper:
 
     # Fetches the cursor and returns list
     def fetch_list(self):
-        return [item[0] for item in cursor.fetchall()]
+        return [item[0] for item in self.cursor.fetchall()]
 
     # Checks if path already exists in the table
     def path_already_exists(self, path_name, table_name):
-        cursor.execute('SELECT PATH FROM {} WHERE PATH="{}"'.format(table_name, path_name))
-        if len(fetch_list()) == 0:
+        self.cursor.execute('SELECT PATH FROM {} WHERE PATH="{}"'.format(table_name, path_name))
+        if len(self.fetch_list()) == 0:
             return False
         return True
 
     # Returns the list of path  names from the searched path
     def get_path(self, path_name, table_name):
-        cursor.execute('SELECT PATH FROM {} WHERE PATH="{}"'.format(table_name, path_name))
-        return fetch_list()
+        self.cursor.execute('SELECT PATH FROM {} WHERE PATH="{}"'.format(table_name, path_name))
+        return self.fetch_list()
 
     # Returns the list of path names from the searched path with regular expressions
     def search_path(self, path_name, table_name):
-        cursor.execute('SELECT PATH FROM {} WHERE PATH REGEXP "{}"'.format(table_name, path_name))
-        return fetch_list()
+        self.cursor.execute('SELECT PATH FROM {} WHERE PATH REGEXP "{}"'.format(table_name, path_name))
+        return self.fetch_list()
 
     # Insert into table
     # creation date will always be the current one
     def insert_value(self, table, path, file_format):
-        cursor.execute("""INSERT INTO {0} (path, format, creation) 
-            VALUES ("{1}", "{2}", "now()")
-            """).format(table, path, file_format))
+        self.cursor.execute("""INSERT INTO {0} (path, format, creation) 
+            VALUES ("{1}", "{2}", NOW())
+            """.format(table, path, file_format))

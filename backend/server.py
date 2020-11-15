@@ -6,6 +6,7 @@ from flask_restful import Resource, Api, reqparse
 from flask import Flask
 import datetime
 import werkzeug
+import os
 import mysql.connector
 from db_helper import DBHelper
 
@@ -37,7 +38,8 @@ def set_table_structure(table_name):
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     path VARCHAR(500),
                     format VARCHAR(20),
-                    creation VARCHAR(50));
+                    creation DATETIME
+                    );
                 """.format(table_name)
     return command
 
@@ -62,7 +64,7 @@ class UploadImageAPI(Resource):
         formatted_date = str(date.day) + "-" + str(date.month) + "-" + str(date.year)
         
         # Image name
-        base_name = "Upload" + formatted_date + ".{}".format(args['format'])
+        base_name = "Upload" + formatted_date
 
         # Check if the image already exists if it exists then put a number on it.
         image_name  = os.path.join(image_dir, base_name)
@@ -71,15 +73,18 @@ class UploadImageAPI(Resource):
         
         if total_match == 0:
             # If the path with same name does not exist then insert the current image_name
-            helper.insert_value(table=self.table, path=image_name, file_format=args['format'], creation=formatted_date)
+            image_name += ".{}".format(args['format'])
+            helper.insert_value(table=self.table, path=image_name, file_format=args['format'])
         else:
             # Append the name with a numeral depending upon the total matches present
             # so that there are no duplicates
-            image_name += str(total_match)
-            helper.insert_value(table=self.table, path=image_name, file_format=args['format'], creation=formatted_date)
-           
+            image_name += ("(" + str(total_match) + ")" + ".{}".format(args['format']))
+            helper.insert_value(table=self.table, path=image_name, file_format=args['format'])
+        
+        db.commit()
         image_file = args['image']
-        image_file.save(image_name) 
+        image_file.save(image_name)
+        return {"status":"image uploaded successfully"} 
 
 
 class TestAPI(Resource):
@@ -87,7 +92,7 @@ class TestAPI(Resource):
         return {"status":"successful"}
 
 
-api.add_resource(UploadImageAPI,"/")
+api.add_resource(UploadImageAPI,"/image")
 api.add_resource(TestAPI,"/test")
 
 if __name__ == '__main__':
