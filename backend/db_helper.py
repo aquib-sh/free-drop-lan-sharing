@@ -29,7 +29,8 @@ class DBHelper:
         return fetch_list()
 
     # Insert into table
-    def insert_value(self, table, path, file_format, creation):
+    # creation date will always be the current one
+    def insert_value(self, table, path, file_format):
         cursor.execute("""INSERT INTO {0} (path, format, creation) 
-            VALUES ("{1}", "{2}", "{3}")
-            """).format(table, path, file_format, creation))
+            VALUES ("{1}", "{2}", "now()")
+            """).format(table, path, file_format))
