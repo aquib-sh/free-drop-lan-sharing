@@ -62,7 +62,7 @@ class UploadImageAPI(Resource):
         formatted_date = str(date.day) + "-" + str(date.month) + "-" + str(date.year)
         
         # Image name
-        base_name = "Upload" + formatted_date + "jpg"
+        base_name = "Upload" + formatted_date + ".{}".format(args['format'])
 
         # Check if the image already exists if it exists then put a number on it.
         image_name  = os.path.join(image_dir, base_name)
@@ -76,18 +76,10 @@ class UploadImageAPI(Resource):
             # Append the name with a numeral depending upon the total matches present
             # so that there are no duplicates
             image_name += str(total_match)
-            cursor.execute("""INSERT INTO {table} (path, format, creation) 
-            VALUES ("{image_path}", "{format}", "{creation_date}")
-            """).format(table=self.table, 
-                        image_path=image_name, 
-                        format=args['format'], 
-                        creation_date=formatted_date)
-                        )            
-
-
-    
+            helper.insert_value(table=self.table, path=image_name, file_format=args['format'], creation=formatted_date)
+           
         image_file = args['image']
-        image_file.save("image.jpg") 
+        image_file.save(image_name) 
 
 
 class TestAPI(Resource):
