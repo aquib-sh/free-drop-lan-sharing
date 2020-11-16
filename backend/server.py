@@ -3,7 +3,7 @@
  """
 
 from flask_restful import Resource, Api, reqparse
-from flask import Flask
+from flask import Flask, make_response, send_file
 import datetime
 import werkzeug
 import os
@@ -105,8 +105,15 @@ class ImageAPI(Resource):
                 message = "No matching file found"
                 return {"status":message}
             # Else return the file
-            return send_file(result[0])
-        
+            img_path = result[0]
+            image_format = helper.get_format(img_path, self.table)[0]
+
+            # Using make_response to include headers with the file
+            # Would be used to determine image format
+            response = make_response(send_file(img_path, mimetype="image/"+image_format))
+            response.headers['File-Format'] = image_format
+            return response        
+
         elif args['type'] == "list_files":
             # Send list of all image files present on the server
             all_files = helper.get_full_list("path", self.table)
