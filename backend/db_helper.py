@@ -23,9 +23,19 @@ class DBHelper:
         self.cursor.execute('SELECT PATH FROM {} WHERE PATH="{}"'.format(table_name, path_name))
         return self.fetch_list()
 
+    # Returns file format
+    def get_format(self, path_name, table_name):
+        self.cursor.execute('SELECT format FROM {} WHERE path="{}"'.format(table_name, path_name))
+        return self.fetch_list()
+
     # Returns the list of path names from the searched path with regular expressions
     def search_path(self, path_name, table_name):
         self.cursor.execute('SELECT PATH FROM {} WHERE PATH REGEXP "{}"'.format(table_name, path_name))
+        return self.fetch_list()
+
+    # Returns a list of an entire column from table present on server database
+    def get_full_list(self, column_name, table_name):
+        self.cursor.execute('SELECT {} FROM {}'.format(column_name, table_name))
         return self.fetch_list()
 
     # Insert into table
