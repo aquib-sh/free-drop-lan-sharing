@@ -52,7 +52,7 @@ def get_formatted_date():
         return formatted_date
 
 
-class UploadImageAPI(Resource):
+class ImageAPI(Resource):
     def __init__(self):
         self.table = "images" 
         cursor.execute("SHOW TABLES;")
@@ -60,13 +60,13 @@ class UploadImageAPI(Resource):
         if self.table not in helper.fetch_list():
             cursor.execute(set_table_structure(self.table))
  
+    # For uploading image
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("image", type = werkzeug.datastructures.FileStorage, location = "files", help = "Attach an image file")
         parser.add_argument("format", help = "Specify file format for image") 
         args = parser.parse_args()        
 
-        
         # Image name
         base_name = "Upload" + get_formatted_date()
 
@@ -89,6 +89,7 @@ class UploadImageAPI(Resource):
         image_file = args['image']
         image_file.save(image_name)
         return {"status":"image uploaded successfully"} 
+     
 
 
 class TestAPI(Resource):
@@ -96,7 +97,7 @@ class TestAPI(Resource):
         return {"status":"successful"}
 
 
-api.add_resource(UploadImageAPI,"/image")
+api.add_resource(ImageAPI,"/image")
 api.add_resource(TestAPI,"/test")
 
 if __name__ == '__main__':
