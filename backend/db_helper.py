@@ -41,6 +41,7 @@ class DBHelper:
     # Insert into table
     # creation date will always be the current one
     def insert_value(self, table, path, file_format):
-        self.cursor.execute("""INSERT INTO {0} (path, format, creation) 
-            VALUES ("{1}", "{2}", NOW())
-            """.format(table, path, file_format))
+        filename = path.replace("images/","")
+        self.cursor.execute("""INSERT INTO {0} (path, filename, format, creation) 
+            VALUES ("{1}", "{2}", "{3}", NOW())
+            """.format(table, path, filename, file_format))

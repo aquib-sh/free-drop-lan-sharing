@@ -37,6 +37,7 @@ def set_table_structure(table_name):
     command = """CREATE TABLE {} (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     path VARCHAR(500),
+                    filename VARCHAR(200),
                     format VARCHAR(20),
                     creation DATETIME
                     );
@@ -116,7 +117,7 @@ class ImageAPI(Resource):
 
         elif args['type'] == "list_files":
             # Send list of all image files present on the server
-            all_files = helper.get_full_list("path", self.table)
+            all_files = helper.get_full_list("filename", self.table)
             return {"list":all_files}
         
 
