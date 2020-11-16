@@ -43,6 +43,14 @@ def set_table_structure(table_name):
                 """.format(table_name)
     return command
 
+# Returns current date for naming the file
+def get_formatted_date():
+        date_obj = datetime.datetime.now()
+        date = date_obj.date()
+        # Current formatted date
+        formatted_date = str(date.day) + "-" + str(date.month) + "-" + str(date.year)
+        return formatted_date
+
 
 class UploadImageAPI(Resource):
     def __init__(self):
@@ -58,13 +66,9 @@ class UploadImageAPI(Resource):
         parser.add_argument("format", help = "Specify file format for image") 
         args = parser.parse_args()        
 
-        # Get current date for naming the file
-        date_obj = datetime.datetime.now()
-        date = date_obj.date()
-        formatted_date = str(date.day) + "-" + str(date.month) + "-" + str(date.year)
         
         # Image name
-        base_name = "Upload" + formatted_date
+        base_name = "Upload" + get_formatted_date()
 
         # Check if the image already exists if it exists then put a number on it.
         image_name  = os.path.join(image_dir, base_name)
