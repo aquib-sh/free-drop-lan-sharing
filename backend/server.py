@@ -63,8 +63,8 @@ class ImageAPI(Resource):
     # For uploading image
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("image", type = werkzeug.datastructures.FileStorage, location = "files", help = "Attach an image file")
-        parser.add_argument("format", help = "Specify file format for image") 
+        parser.add_argument("image", type = werkzeug.datastructures.FileStorage, location = "files", help = "Attach an image file", required=True)
+        parser.add_argument("format", help = "Specify file format for image", required=True) 
         args = parser.parse_args()        
 
         # Image name
@@ -89,7 +89,30 @@ class ImageAPI(Resource):
         image_file = args['image']
         image_file.save(image_name)
         return {"status":"image uploaded successfully"} 
-     
+
+    # For sending image to client
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("filename", help="Specify name of the file", default="null")
+        parser.add_argument("type",help="Use file_req for receiving a file from server\nUse list_files for getting list of all files present ", required=True)
+        args = parser.parse_args()
+
+        if args['type'] == "file_req":
+            # Send specific image file
+            result = helper.get_path(args['filename'], self.table)
+            # If results were not found then simply return this message
+            if len(result) == 0:
+                message = "No matching file found"
+                return {"status":message}
+            # Else return the file
+            return send_file(result[0])
+        
+        elif args['type'] == "list_files":
+            # Send list of all image files present on the server
+            all_files = helper.get_full_list("path", self.table)
+            return {"list":all_files}
+        
+
 
 
 class TestAPI(Resource):
