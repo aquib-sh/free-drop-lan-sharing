@@ -45,3 +45,8 @@ class DBHelper:
         self.cursor.execute("""INSERT INTO {0} (path, filename, format, creation) 
             VALUES ("{1}", "{2}", "{3}", NOW())
             """.format(table, path, filename, file_format))
+
+    # Delete records from table
+    def delete_value(self, table, filename):
+        self.cursor.execute('DELETE FROM {} WHERE filename="{}"'.format(table, filename))
+        
