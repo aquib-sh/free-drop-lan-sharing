@@ -120,6 +120,23 @@ class ImageAPI(Resource):
             all_files = helper.get_full_list("filename", self.table)
             return {"list":all_files}
         
+    # For removing files from server
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("filename", help="Specify name of the file", required=True)
+        args = parser.parse_args()
+
+        filename = args['filename']
+
+        # Get the path for file and delete it
+        cursor.execute('SELECT path FROM {} WHERE filename="{}"'.format(self.table, filename))
+        path = helper.fetch_list()[0]
+        os.remove(path)
+
+        # Delete record from database as well
+        helper.delete_value(self.table, args['filename'])
+
+        return {"status":"file deleted sucessfully"}
 
 
 
