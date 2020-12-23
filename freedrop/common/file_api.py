@@ -33,15 +33,15 @@ class FileAPI(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("file", type = werkzeug.datastructures.FileStorage, location = "files", help = "Attach an file", required=True)
         parser.add_argument("format", help = "Specify file format for file", required=True)
-        parser.add_argument("name", help = "Specify the name you want to put on file", default=None)
+        parser.add_argument("filename", help = "Specify the name you want to put on file", default=None)
         args = parser.parse_args()
 
         # If name argument is given in the request then name it as according to it
         # else name it defaultly by giving Upload and current date
-        if args["name"] == None:        
+        if args["filename"] == None:        
             base_name = "FreeDrop" + get_formatted_date()         # File name
         else:
-            base_name = args["name"]
+            base_name = args["filename"]
             extension = ("." + args['format'])
             if extension in base_name:
                 base_name = base_name.replace(extension, "")
@@ -81,14 +81,20 @@ class FileAPI(Resource):
         file_file.save(file_name)
         return {"status":"file uploaded successfully"} 
 
-    def get(self):
+    def get(self, want, filename):
         """ For sending file to client. """
-        parser = reqparse.RequestParser()
-        parser.add_argument("filename", help="Specify name of the file", default="null")
-        parser.add_argument("type",help="Use file_req for receiving a file from server\nUse list_files for getting list of all files present ", required=True)
-        args = parser.parse_args()
+        args = {}
 
-        if args['type'] == "file_req":
+        args['filename'] = filename
+        args['type']     = want 
+        #parser = reqparse.RequestParser()
+        #parser.add_argument("filename", type=str, help="Specify name of the file", default="null")
+        #parser.add_argument("type",type=str,help="Use file_req for receiving a file from server\nUse list_files for getting list of all files present ", required=True)
+        #args = parser.parse_args()
+
+        print("Got type as {}".format(args['type']))
+
+        if args['type'] == "file_req" and filename != "all":
             # Send specific file file
             result = self.helper.get_path(args['filename'], self.table)
             # If file not found return 404
@@ -104,10 +110,11 @@ class FileAPI(Resource):
             response.headers['File-Format'] = file_format
             return response        
 
-        elif args['type'] == "list_files":
+        elif args['type'] == "list_files" and args['filename'] == "all":
             # Send list of all file files present on the server
             all_files = self.helper.get_full_list("filename", self.table)
-            return {"list":all_files}
+            resp = {"present files":all_files}
+            return resp
         
     def delete(self):
         """ For removing files from server."""
