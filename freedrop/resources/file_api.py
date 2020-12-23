@@ -3,8 +3,8 @@ import sys
 import werkzeug
 from flask_restful import Resource, reqparse
 from flask import make_response, send_file, jsonify
-from freedrop.resources.util import set_table_structure, get_formatted_date, format_path
-import freedrop.resources.configuration as config
+from freedrop.common.util import set_table_structure, get_formatted_date, format_path
+import freedrop.common.configuration as config
 
 class FileAPI(Resource):
     """ 
