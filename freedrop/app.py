@@ -10,9 +10,9 @@ from flask_cors import CORS
 sys.path.append(os.path.abspath(
     os.path.join(os.getcwd(), os.pardir)
     ))
-from freedrop.common.test_api import TestAPI
-from freedrop.common.file_api import FileAPI
-from freedrop.resources.db_helper import DBHelper
+from freedrop.resources.test_api import TestAPI
+from freedrop.resources.file_api import FileAPI
+from freedrop.common.db_helper import DBHelper
 
 app = Flask(__name__)
 api = Api(app)
